@@ -1,5 +1,8 @@
 package br.com.swarmbuild.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +15,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(RoboNaoEncontradoException.class)
     public ResponseEntity<ErroResponse> tratarRoboNaoEncontrado(RoboNaoEncontradoException ex) {
@@ -59,9 +64,21 @@ public class GlobalExceptionHandler {
                 .body(ErroResponse.simples(400, "Argumento invalido", ex.getMessage()));
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErroResponse> tratarViolacaoDeIntegridade(DataIntegrityViolationException ex) {
+        log.warn("Violacao de integridade referencial bloqueada", ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErroResponse.simples(409, "Operacao bloqueada",
+                        "Operacao viola a integridade dos dados (registro referenciado por outros recursos)"));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> tratarErroGenerico(Exception ex) {
+        // Sistemas criticos nao podem vazar detalhes internos (SQL, stack trace) ao cliente:
+        // o erro real fica no log do servidor e o cliente recebe uma mensagem generica.
+        log.error("Erro interno nao tratado", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErroResponse.simples(500, "Erro interno", ex.getMessage()));
+                .body(ErroResponse.simples(500, "Erro interno",
+                        "Ocorreu um erro inesperado. A equipe foi notificada."));
     }
 }

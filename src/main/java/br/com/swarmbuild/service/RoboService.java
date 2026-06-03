@@ -6,7 +6,10 @@ import br.com.swarmbuild.exception.RegraDeNegocioException;
 import br.com.swarmbuild.exception.RoboNaoEncontradoException;
 import br.com.swarmbuild.model.Robo;
 import br.com.swarmbuild.model.enums.StatusRobo;
+import br.com.swarmbuild.repository.AlertaRepository;
+import br.com.swarmbuild.repository.HeartbeatRepository;
 import br.com.swarmbuild.repository.RoboRepository;
+import br.com.swarmbuild.repository.TarefaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +19,20 @@ import java.util.List;
 public class RoboService {
 
     private final RoboRepository roboRepository;
+    private final TarefaRepository tarefaRepository;
+    private final AlertaRepository alertaRepository;
+    private final HeartbeatRepository heartbeatRepository;
     private final OrquestradorEnxame orquestrador;
 
-    public RoboService(RoboRepository roboRepository, OrquestradorEnxame orquestrador) {
+    public RoboService(RoboRepository roboRepository,
+                       TarefaRepository tarefaRepository,
+                       AlertaRepository alertaRepository,
+                       HeartbeatRepository heartbeatRepository,
+                       OrquestradorEnxame orquestrador) {
         this.roboRepository = roboRepository;
+        this.tarefaRepository = tarefaRepository;
+        this.alertaRepository = alertaRepository;
+        this.heartbeatRepository = heartbeatRepository;
         this.orquestrador = orquestrador;
     }
 
@@ -54,6 +67,15 @@ public class RoboService {
         if (robo.getStatus() == StatusRobo.EM_TAREFA) {
             throw new RegraDeNegocioException("Nao e possivel deletar um robo em tarefa");
         }
+        if (!tarefaRepository.findEmExecucaoPorRobo(id).isEmpty()) {
+            throw new RegraDeNegocioException("Nao e possivel deletar um robo com tarefas ativas atribuidas");
+        }
+        // Desvincula o historico antes de remover para nao violar as chaves estrangeiras
+        // alertas e tarefas concluidas preservam o registro com a referencia ao robo zerada
+        //  os heartbeats sao descartados
+        tarefaRepository.desvincularRobo(id);
+        alertaRepository.desvincularRobo(id);
+        heartbeatRepository.deletarPorRobo(id);
         roboRepository.delete(robo);
     }
 }

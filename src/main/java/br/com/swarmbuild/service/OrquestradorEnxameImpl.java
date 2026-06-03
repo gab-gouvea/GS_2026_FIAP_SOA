@@ -64,8 +64,9 @@ public class OrquestradorEnxameImpl implements OrquestradorEnxame {
 
     @Override
     public Optional<Robo> escolherMelhorRobo(Tarefa tarefa) {
-        List<Robo> candidatos = roboRepository.findDisponiveisPorTipo(tarefa.getTipoRoboRequerido())
+        List<Robo> candidatos = roboRepository.findDisponiveis()
                 .stream()
+                .filter(robo -> robo.ehCompativelCom(tarefa.getTipoRoboRequerido()))
                 .filter(Robo::estaDisponivel)
                 .toList();
 
@@ -91,6 +92,13 @@ public class OrquestradorEnxameImpl implements OrquestradorEnxame {
         Robo anterior = tarefa.getRoboAtribuido();
         tarefa.desatribuir();
         tarefa.marcarRealocada();
+
+        // Um robo saudavel que estava apenas ocupado com esta tarefa volta a ficar disponivel.
+        // Robos em FALHA ou MANUTENCAO mantem o status (fluxo do monitor de falhas do enxame).
+        if (anterior != null && anterior.getStatus() == StatusRobo.EM_TAREFA) {
+            anterior.setStatus(StatusRobo.DISPONIVEL);
+            roboRepository.save(anterior);
+        }
 
         Optional<Robo> novo = escolherMelhorRobo(tarefa);
         if (novo.isPresent()) {

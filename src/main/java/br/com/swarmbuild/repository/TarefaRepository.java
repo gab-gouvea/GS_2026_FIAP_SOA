@@ -3,6 +3,7 @@ package br.com.swarmbuild.repository;
 import br.com.swarmbuild.model.Tarefa;
 import br.com.swarmbuild.model.enums.StatusTarefa;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,8 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
 
     @Query("SELECT t FROM Tarefa t WHERE t.roboAtribuido.id = :roboId AND (t.status = br.com.swarmbuild.model.enums.StatusTarefa.EM_EXECUCAO OR t.status = br.com.swarmbuild.model.enums.StatusTarefa.REALOCADA)")
     List<Tarefa> findEmExecucaoPorRobo(Long roboId);
+
+    @Modifying
+    @Query("UPDATE Tarefa t SET t.roboAtribuido = null WHERE t.roboAtribuido.id = :roboId")
+    void desvincularRobo(Long roboId);
 }

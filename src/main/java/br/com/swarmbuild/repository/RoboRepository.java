@@ -2,7 +2,6 @@ package br.com.swarmbuild.repository;
 
 import br.com.swarmbuild.model.Robo;
 import br.com.swarmbuild.model.enums.StatusRobo;
-import br.com.swarmbuild.model.enums.TipoRobo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,10 +24,4 @@ public interface RoboRepository extends JpaRepository<Robo, Long> {
 
     @Query("SELECT r FROM Robo r WHERE r.ultimoHeartbeat IS NOT NULL AND r.ultimoHeartbeat < :limite AND r.status <> br.com.swarmbuild.model.enums.StatusRobo.FALHA AND r.status <> br.com.swarmbuild.model.enums.StatusRobo.MANUTENCAO")
     List<Robo> findOffline(LocalDateTime limite);
-
-    default List<Robo> findDisponiveisPorTipo(TipoRobo tipo) {
-        return findDisponiveis().stream()
-                .filter(r -> r.getTipo() == tipo)
-                .toList();
-    }
 }
