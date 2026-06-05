@@ -25,13 +25,13 @@ A Global Solution **Space Connect** desafia os alunos a:
 A solução pode atacar problemas **da Terra**, **do espaço** ou da **integração entre os dois**, explorando
 dados de satélite, conectividade, logística, sustentabilidade ou **sistemas autônomos**.
 
-O **SwarmBuild** se encaixa diretamente em uma das áreas de aplicação oficiais do tema:
+O **nosso projeto** se encaixa diretamente em uma das áreas de aplicação oficiais do tema:
 **sistemas autônomos e robótica espacial**. Ele também é um caso clássico de **integração Terra ↔ espaço**:
 a mesma inteligência de enxame que coordena robôs na Lua serve para missões de alto risco aqui na Terra.
 
 ---
 
-## O problema que o Nosso projeto resolve
+## O problema que o nosso projeto resolve
 
 O programa Artemis pretende **construir uma base lunar antes** da chegada dos astronautas.
 Quem constrói são **robôs**. Mas o ambiente lunar é implacável: **poeira abrasiva**, **terreno irregular**
