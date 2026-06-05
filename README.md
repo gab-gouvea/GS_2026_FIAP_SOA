@@ -2,9 +2,6 @@
 
 **API REST de orquestração de enxame robótico autônomo para construção de infraestrutura em ambientes hostis (base lunar).**
 
-> Projeto desenvolvido para a **Global Solution – FIAP**, edição **Space Connect**.
-> Disciplina de **Java** (Spring Boot + JPA + PostgreSQL).
-
 ---
 
 ## Integrantes do grupo
