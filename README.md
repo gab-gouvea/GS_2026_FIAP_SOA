@@ -1,4 +1,4 @@
-# SwarmBuild 🛰️🤖
+# Global Solution Space Connect 2026 🛰️🤖
 
 **API REST de orquestração de enxame robótico autônomo para construção de infraestrutura em ambientes hostis (base lunar).**
 
@@ -34,14 +34,14 @@ a mesma inteligência de enxame que coordena robôs na Lua serve para missões d
 
 ---
 
-## 🚀 O problema que o SwarmBuild resolve
+## 🚀 O problema que o Nosso projeto resolve
 
 O programa Artemis pretende **construir uma base lunar antes** da chegada dos astronautas.
 Quem constrói são **robôs**. Mas o ambiente lunar é implacável: **poeira abrasiva**, **terreno irregular**
 e radiação. Pior: a Terra está a mais de **380 mil km**, com **delay de comunicação de até 3 segundos** —
 não dá para esperar um operador em Houston decidir o que fazer toda vez que um robô trava.
 
-O **SwarmBuild** é a camada de software que **orquestra o enxame de forma autônoma**:
+O **Nosso projeto** é a camada de software que **orquestra o enxame de forma autônoma**:
 
 1. Cada robô envia um **heartbeat** periódico (bateria, posição, status).
 2. Se um robô **para de responder**, o sistema **detecta a falha automaticamente**.
@@ -55,7 +55,7 @@ O **SwarmBuild** é a camada de software que **orquestra o enxame de forma autô
 
 ## 🎯 Alinhamento com o tema e com os ODS
 
-| Eixo do Space Connect | Como o SwarmBuild atende |
+| Eixo do Space Connect | Como o Nosso projeto atende |
 |-----------------------|--------------------------|
 | **Sistemas autônomos** | Detecção de falha + realocação de tarefas sem operador humano |
 | **Economia espacial** | Viabiliza construção robótica de infraestrutura lunar antes da chegada humana |
@@ -194,65 +194,14 @@ Robo (abstract)
 
 ---
 
-## ▶️ Como rodar
-
-### Pré-requisitos
-
-- **Java 21+**
-- **PostgreSQL** rodando em `localhost:5432`
-- Database `swarmbuild` criado:
-
-```bash
-psql -d postgres -c "CREATE DATABASE swarmbuild;"
-```
-
-> 💡 No macOS com Homebrew, o Postgres normalmente já roda como **serviço** em segundo plano
-> (`brew services list`), independente da IDE. Você só precisa subir a **aplicação**.
-
-### Subir a aplicação
-
-**Pelo IntelliJ:** botão ▶ **Run** na classe `SwarmbuildApplication`.
-
-**Pelo terminal:**
-
-```bash
-./mvnw spring-boot:run
-```
-
-A API sobe em **http://localhost:8080** (apenas **um** processo pode usar a porta 8080 por vez).
-
-### Configuração do banco
-
-Ajuste `src/main/resources/application.properties` se seu usuário do Postgres for diferente:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/swarmbuild
-spring.datasource.username=SEU_USUARIO
-spring.datasource.password=SUA_SENHA
-```
-
-Parâmetros configuráveis da missão:
-
-```properties
-swarmbuild.heartbeat.timeout-seconds=60     # tempo sem heartbeat até marcar FALHA
-swarmbuild.bateria.alerta-percentual=20     # abaixo disso gera alerta BATERIA_BAIXA
-```
-
----
-
 ## 📚 Documentação interativa (Swagger / OpenAPI)
 
 Com a aplicação no ar:
 
-- **Swagger UI** (interface clicável) → **http://localhost:8080/swagger-ui.html**
-- **Documento OpenAPI / OAS 3.1** (JSON) → **http://localhost:8080/api-docs**
+- **Swagger UI** → **http://localhost:8080/swagger-ui.html**
+- **Documento OpenAPI / OAS 3.1** → **http://localhost:8080/api-docs**
 
-> ⚠️ O caminho do JSON foi customizado para `/api-docs` (em vez do padrão `/v3/api-docs`),
-> via `springdoc.api-docs.path` no `application.properties`.
-
-O **OAS** é a descrição padronizada e legível por máquina de toda a API (endpoints, parâmetros,
-respostas e modelos). O **springdoc** gera esse documento a partir do código, e o **Swagger UI**
-o transforma na tela interativa.
+⚠️ O caminho do JSON foi customizado para `/api-docs` (em vez do padrão `/v3/api-docs`)
 
 ---
 
@@ -295,47 +244,6 @@ o transforma na tela interativa.
 | GET    | `/api/alertas`               | Lista (filtro `?resolvido=false`) |
 | GET    | `/api/alertas/{id}`          | Detalhe |
 | POST   | `/api/alertas/{id}/resolver` | Marca como resolvido |
-
----
-
-## 💻 Exemplo de uso (curl)
-
-```bash
-# 1. Cria duas escavadeiras
-curl -X POST http://localhost:8080/api/robos -H "Content-Type: application/json" -d '{
-  "codigo": "ESC-001", "nome": "Escavadeira Alpha", "modelo": "LunarDigger v2",
-  "tipo": "ESCAVADEIRA", "latitude": -3.1, "longitude": 23.4,
-  "capacidadeCargaKg": 500, "profundidadeMaximaMetros": 3.5
-}'
-
-curl -X POST http://localhost:8080/api/robos -H "Content-Type: application/json" -d '{
-  "codigo": "ESC-002", "nome": "Escavadeira Beta", "modelo": "LunarDigger v2",
-  "tipo": "ESCAVADEIRA", "latitude": -3.0, "longitude": 23.5,
-  "capacidadeCargaKg": 500, "profundidadeMaximaMetros": 3.5
-}'
-
-# 2. Cria uma tarefa de escavação
-curl -X POST http://localhost:8080/api/tarefas -H "Content-Type: application/json" -d '{
-  "codigo": "T-001", "descricao": "Escavar cratera setor 5",
-  "tipoRoboRequerido": "ESCAVADEIRA", "prioridade": "ALTA",
-  "latitude": -3.0, "longitude": 23.4
-}'
-
-# 3. Atribui automaticamente ao melhor robô disponível
-curl -X POST http://localhost:8080/api/tarefas/1/atribuir
-
-# 4. Robô A manda heartbeat (vivo)
-curl -X POST http://localhost:8080/api/robos/1/heartbeats -H "Content-Type: application/json" -d '{
-  "bateria": 85, "latitude": -3.05, "longitude": 23.42,
-  "statusReportado": "EM_TAREFA", "mensagem": "tudo certo"
-}'
-
-# 5. Para de mandar heartbeat e espera ~70 segundos.
-#    O MonitorDeFalhasService vai detectar a falha e realocar para o Robô B.
-
-# 6. Confere os alertas gerados
-curl http://localhost:8080/api/alertas
-```
 
 ---
 
@@ -394,14 +302,3 @@ Testes automatizados com **JUnit 5 + Mockito** (24 testes no total):
 | WebService / API | Controllers REST em `controller/` com CRUD completo + documentação Swagger/OAS |
 | Testes | JUnit 5 + Mockito (24 testes) |
 | Organização | Pacotes `controller`, `service`, `repository`, `model`, `dto`, `exception` |
-
----
-
-## 👥 Autores
-
-Grupo da Global Solution (Space Connect) · Java · FIAP · 2026
-
-- **554981** — Bruno Gabriel Silva Dominicheli
-- **555528** — Gabriel Gouvea Marques de Oliveira
-- **556198** — Miguel Kapicius Caires
-- **555608** — Thiago Ferreira Oliveira
