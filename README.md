@@ -1,4 +1,4 @@
-# Global Solution Space Connect 2026 🛰️🤖
+# Global Solution Space Connect 2026 
 
 **API REST de orquestração de enxame robótico autônomo para construção de infraestrutura em ambientes hostis (base lunar).**
 
@@ -7,7 +7,7 @@
 
 ---
 
-## 👥 Integrantes do grupo
+## Integrantes do grupo
 
 | RM | Nome |
 |--------|------|
@@ -18,7 +18,7 @@
 
 ---
 
-## 🌍 Sobre a Global Solution — Space Connect
+## Sobre a Global Solution — Space Connect
 
 A Global Solution **Space Connect** desafia os alunos a:
 
@@ -34,7 +34,7 @@ a mesma inteligência de enxame que coordena robôs na Lua serve para missões d
 
 ---
 
-## 🚀 O problema que o Nosso projeto resolve
+## O problema que o Nosso projeto resolve
 
 O programa Artemis pretende **construir uma base lunar antes** da chegada dos astronautas.
 Quem constrói são **robôs**. Mas o ambiente lunar é implacável: **poeira abrasiva**, **terreno irregular**
@@ -53,7 +53,7 @@ O **Nosso projeto** é a camada de software que **orquestra o enxame de forma au
 
 ---
 
-## 🎯 Alinhamento com o tema e com os ODS
+## Alinhamento com o tema e com os ODS
 
 | Eixo do Space Connect | Como o Nosso projeto atende |
 |-----------------------|--------------------------|
@@ -73,7 +73,7 @@ O **Nosso projeto** é a camada de software que **orquestra o enxame de forma au
 
 ---
 
-## 🌎 Aplicação na Terra (spin-off)
+## Aplicação na Terra (spin-off)
 
 A mesma inteligência de enxame, fora da Lua:
 
@@ -85,7 +85,7 @@ Em todos esses cenários a regra é a mesma: **falhas individuais não podem par
 
 ---
 
-## 🔧 Como o sistema integra com o problema
+## Como o sistema integra com o problema
 
 ```
 +---------------+   heartbeat   +-------------+   realoca   +---------------+
@@ -109,7 +109,7 @@ Em todos esses cenários a regra é a mesma: **falhas individuais não podem par
 
 ---
 
-## 🔁 Diagrama de fluxo — realocação automática
+## Diagrama de fluxo — realocação automática
 
 ```mermaid
 sequenceDiagram
@@ -142,7 +142,7 @@ sequenceDiagram
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 Aplicação em camadas, organizada por responsabilidade:
 
@@ -183,7 +183,7 @@ Robo (abstract)
 
 ---
 
-## 🧰 Stack
+## Stack
 
 - **Java 21**
 - **Spring Boot 3.5.7** (web, data-jpa, validation)
@@ -194,7 +194,7 @@ Robo (abstract)
 
 ---
 
-## 📚 Documentação interativa (Swagger / OpenAPI)
+## Documentação interativa (Swagger / OpenAPI)
 
 Com a aplicação no ar:
 
@@ -205,7 +205,7 @@ Com a aplicação no ar:
 
 ---
 
-## 🔌 Endpoints
+## Endpoints
 
 ### Robôs
 
@@ -247,7 +247,7 @@ Com a aplicação no ar:
 
 ---
 
-## 📐 Regras de negócio implementadas
+## Regras de negócio implementadas
 
 1. **Heartbeat** — cada robô envia status periodicamente; o serviço atualiza posição, bateria
    e `ultimoHeartbeat`. Se a bateria cai abaixo de 20% gera alerta `BATERIA_BAIXA`.
@@ -267,7 +267,7 @@ Com a aplicação no ar:
 
 ---
 
-## 🧪 Testes
+## Testes
 
 Testes automatizados com **JUnit 5 + Mockito** (24 testes no total):
 
@@ -284,7 +284,7 @@ Testes automatizados com **JUnit 5 + Mockito** (24 testes no total):
 
 ---
 
-## ✅ Mapeamento dos requisitos do professor
+## Mapeamento dos requisitos do professor
 
 | Requisito | Onde está no código |
 |-----------|---------------------|
