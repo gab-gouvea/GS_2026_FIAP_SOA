@@ -1,36 +1,91 @@
-# SwarmBuild
+# SwarmBuild 🛰️🤖
 
-API REST de orquestracao de enxame robotico para ambientes hostis.
-Projeto da disciplina de Java (Global Solution - FIAP).
+**API REST de orquestração de enxame robótico autônomo para construção de infraestrutura em ambientes hostis (base lunar).**
 
----
-
-## Motivacao
-
-O programa Artemis vai construir uma base lunar **antes** dos astronautas chegarem.
-Quem vai construir? Robos. O ambiente lunar tem **poeira altamente abrasiva**, **terreno irregular**
-e qualquer falha em um robo na cratera pode comprometer toda a missao - mas a Terra esta a mais
-de 380 mil km, com delay de comunicacao de ate 3 segundos. Nao da pra esperar um humano
-em Houston decidir o que fazer quando um robo trava.
-
-O **SwarmBuild** e a camada de software que controla o enxame: cada robo manda um
-**heartbeat** periodico com bateria, posicao e status. Se um robo para de responder,
-o sistema **detecta automaticamente** a falha e **realoca a tarefa dele para outro robo
-compativel** que esteja disponivel - sem intervencao humana.
-
-### Aplicacao na Terra (spin-off)
-
-A mesma logica de enxame serve para:
-
-- **Mineracao em zonas de alto risco** - robos escavando onde seria mortal mandar humanos
-- **Resgate em desastres** - varredura coordenada de escombros apos terremotos
-- **Construcao em zonas radioativas** - decomissionamento de reatores
-
-Em todos esses cenarios, a regra e a mesma: **falhas individuais nao podem parar a missao**.
+> Projeto desenvolvido para a **Global Solution – FIAP**, edição **Space Connect**.
+> Disciplina de **Java** (Spring Boot + JPA + PostgreSQL).
 
 ---
 
-## Como o sistema integra com o problema
+## 👥 Integrantes do grupo
+
+| RM | Nome |
+|--------|------|
+| 554981 | Bruno Gabriel Silva Dominicheli |
+| 555528 | Gabriel Gouvea Marques de Oliveira |
+| 556198 | Miguel Kapicius Caires |
+| 555608 | Thiago Ferreira Oliveira |
+
+---
+
+## 🌍 Sobre a Global Solution — Space Connect
+
+A Global Solution **Space Connect** desafia os alunos a:
+
+> _"propor soluções que usem tecnologia, dados e inovação para resolver desafios na Terra,
+> expandir as possibilidades da economia espacial e criar oportunidades para o futuro."_
+
+A solução pode atacar problemas **da Terra**, **do espaço** ou da **integração entre os dois**, explorando
+dados de satélite, conectividade, logística, sustentabilidade ou **sistemas autônomos**.
+
+O **SwarmBuild** se encaixa diretamente em uma das áreas de aplicação oficiais do tema:
+**sistemas autônomos e robótica espacial**. Ele também é um caso clássico de **integração Terra ↔ espaço**:
+a mesma inteligência de enxame que coordena robôs na Lua serve para missões de alto risco aqui na Terra.
+
+---
+
+## 🚀 O problema que o SwarmBuild resolve
+
+O programa Artemis pretende **construir uma base lunar antes** da chegada dos astronautas.
+Quem constrói são **robôs**. Mas o ambiente lunar é implacável: **poeira abrasiva**, **terreno irregular**
+e radiação. Pior: a Terra está a mais de **380 mil km**, com **delay de comunicação de até 3 segundos** —
+não dá para esperar um operador em Houston decidir o que fazer toda vez que um robô trava.
+
+O **SwarmBuild** é a camada de software que **orquestra o enxame de forma autônoma**:
+
+1. Cada robô envia um **heartbeat** periódico (bateria, posição, status).
+2. Se um robô **para de responder**, o sistema **detecta a falha automaticamente**.
+3. A tarefa do robô falho é **realocada para outro robô compatível** que esteja disponível —
+   **sem intervenção humana**.
+4. Todo evento crítico vira um **alerta** persistido no banco, formando o histórico da missão.
+
+**A regra de ouro:** _falhas individuais não podem parar a missão._
+
+---
+
+## 🎯 Alinhamento com o tema e com os ODS
+
+| Eixo do Space Connect | Como o SwarmBuild atende |
+|-----------------------|--------------------------|
+| **Sistemas autônomos** | Detecção de falha + realocação de tarefas sem operador humano |
+| **Economia espacial** | Viabiliza construção robótica de infraestrutura lunar antes da chegada humana |
+| **Oportunidades futuras** | Arquitetura reaproveitável para mineração, resgate e operação em zonas hostis |
+| **Integração Terra ↔ espaço** | Mesma lógica de enxame aplicada à Lua e a cenários terrestres de alto risco |
+
+### Objetivos de Desenvolvimento Sustentável (ODS)
+
+| ODS | Conexão |
+|-----|---------|
+| **9 – Indústria, inovação e infraestrutura** | Construção autônoma e resiliente de infraestrutura (foco principal) |
+| **8 – Trabalho decente e crescimento econômico** | Robôs assumem tarefas letais; impulsiona a nascente economia espacial |
+| **11 – Cidades e comunidades sustentáveis** | Spin-off: varredura coordenada em resgate a desastres |
+| **13 – Ação climática** | Spin-off: resposta rápida a desastres naturais |
+
+---
+
+## 🌎 Aplicação na Terra (spin-off)
+
+A mesma inteligência de enxame, fora da Lua:
+
+- **Mineração em zonas de alto risco** — robôs escavando onde seria mortal mandar humanos
+- **Resgate em desastres** — varredura coordenada de escombros após terremotos
+- **Construção em zonas radioativas** — descomissionamento de reatores
+
+Em todos esses cenários a regra é a mesma: **falhas individuais não podem parar a missão.**
+
+---
+
+## 🔧 Como o sistema integra com o problema
 
 ```
 +---------------+   heartbeat   +-------------+   realoca   +---------------+
@@ -45,16 +100,16 @@ Em todos esses cenarios, a regra e a mesma: **falhas individuais nao podem parar
                                 +---------------+
 ```
 
-1. Cada robo do enxame envia heartbeat para `POST /api/robos/{id}/heartbeats`
-2. O `MonitorDeFalhasService` roda a cada 10 segundos verificando quem nao respondeu
-3. Se `ultimoHeartbeat < agora - 60s`, robo e marcado como `FALHA`
-4. As tarefas que ele estava executando sao **automaticamente realocadas**
-   para outro robo do mesmo tipo via `OrquestradorEnxame`
-5. Todo evento critico gera um `Alerta` armazenado no banco
+1. Cada robô do enxame envia heartbeat para `POST /api/robos/{id}/heartbeats`
+2. O `MonitorDeFalhasService` roda a cada 10 segundos verificando quem não respondeu
+3. Se `ultimoHeartbeat < agora - 60s`, o robô é marcado como `FALHA`
+4. As tarefas que ele executava são **automaticamente realocadas** para outro robô do
+   mesmo tipo via `OrquestradorEnxame`
+5. Todo evento crítico gera um `Alerta` armazenado no banco
 
 ---
 
-## Diagrama de fluxo - realocacao automatica
+## 🔁 Diagrama de fluxo — realocação automática
 
 ```mermaid
 sequenceDiagram
@@ -67,7 +122,7 @@ sequenceDiagram
     R1->>API: POST /heartbeats (bateria 85%, status EM_TAREFA)
     API->>DB: salva heartbeat e atualiza Robo A
 
-    Note over R1: falha hardware - para de transmitir
+    Note over R1: falha de hardware - para de transmitir
 
     loop a cada 10 segundos
         MON->>DB: busca robos com ultimoHeartbeat < agora - 60s
@@ -87,42 +142,88 @@ sequenceDiagram
 
 ---
 
-## Stack
+## 🏗️ Arquitetura
+
+Aplicação em camadas, organizada por responsabilidade:
+
+```
+controller/   -> camada web (REST): recebe requisições, devolve DTOs e status HTTP
+service/      -> regras de negócio (orquestração, monitoramento, validações)
+repository/   -> acesso a dados (Spring Data JPA)
+model/        -> entidades JPA + enums + Value Object (Coordenada)
+dto/          -> objetos de entrada/saída (records) - desacoplam a API do modelo
+exception/    -> exceções customizadas + handler global (@RestControllerAdvice)
+```
+
+**Destaques de arquitetura:**
+
+- **`OrquestradorEnxame` é uma interface**, implementada por `OrquestradorEnxameImpl` e injetada
+  via construtor nos serviços (inversão de dependência / baixo acoplamento).
+- **`MonitorDeFalhasService`** usa `@Scheduled` para rodar a detecção de falhas em segundo plano.
+- **`GlobalExceptionHandler`** centraliza o tratamento de erros e devolve respostas JSON padronizadas.
+
+### Modelo de domínio
+
+`Robo` é uma **classe abstrata** com três subclasses concretas (herança + polimorfismo):
+
+```
+Robo (abstract)
+├── RoboEscavadeira    -> escava (capacidade de carga, profundidade máxima)
+├── RoboTransportador  -> transporta (capacidade de carga, velocidade)
+└── RoboMontador       -> monta (precisão, número de braços)
+```
+
+| Entidade | Papel |
+|----------|-------|
+| `Robo` (abstract) | Robô do enxame; mapeado por herança JPA (`SINGLE_TABLE`) |
+| `Tarefa` | Trabalho a ser executado por um robô de um tipo específico |
+| `Heartbeat` | Pulso periódico do robô (bateria, posição, status) |
+| `Alerta` | Evento crítico registrado (offline, bateria baixa, realocação, sem robô) |
+| `Coordenada` | **Value Object** (`@Embeddable`, record) com latitude/longitude |
+
+---
+
+## 🧰 Stack
 
 - **Java 21**
 - **Spring Boot 3.5.7** (web, data-jpa, validation)
 - **PostgreSQL 18**
-- **Lombok**
-- **Springdoc OpenAPI** (Swagger UI)
-- **Maven**
+- **Springdoc OpenAPI 2.8.13** (Swagger UI / OAS 3.1)
+- **JUnit 5 + Mockito** (testes)
+- **Maven** (via wrapper `./mvnw`)
 
 ---
 
-## Como rodar
+## ▶️ Como rodar
 
-### Pre-requisitos
+### Pré-requisitos
 
-- Java 21+
-- PostgreSQL rodando em `localhost:5432`
+- **Java 21+**
+- **PostgreSQL** rodando em `localhost:5432`
 - Database `swarmbuild` criado:
 
 ```bash
 psql -d postgres -c "CREATE DATABASE swarmbuild;"
 ```
 
-### Subir a aplicacao
+> 💡 No macOS com Homebrew, o Postgres normalmente já roda como **serviço** em segundo plano
+> (`brew services list`), independente da IDE. Você só precisa subir a **aplicação**.
+
+### Subir a aplicação
+
+**Pelo IntelliJ:** botão ▶ **Run** na classe `SwarmbuildApplication`.
+
+**Pelo terminal:**
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-A API sobe em `http://localhost:8080`.
-Swagger UI em `http://localhost:8080/swagger-ui.html`.
+A API sobe em **http://localhost:8080** (apenas **um** processo pode usar a porta 8080 por vez).
 
-### Configuracao do banco
+### Configuração do banco
 
-Edite `src/main/resources/application.properties` se seu usuario do Postgres
-for diferente de `gabrielgouvea`:
+Ajuste `src/main/resources/application.properties` se seu usuário do Postgres for diferente:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/swarmbuild
@@ -130,51 +231,74 @@ spring.datasource.username=SEU_USUARIO
 spring.datasource.password=SUA_SENHA
 ```
 
+Parâmetros configuráveis da missão:
+
+```properties
+swarmbuild.heartbeat.timeout-seconds=60     # tempo sem heartbeat até marcar FALHA
+swarmbuild.bateria.alerta-percentual=20     # abaixo disso gera alerta BATERIA_BAIXA
+```
+
 ---
 
-## Endpoints principais
+## 📚 Documentação interativa (Swagger / OpenAPI)
 
-### Robos
+Com a aplicação no ar:
 
-| Metodo | Caminho                   | Descricao                              |
-|--------|---------------------------|----------------------------------------|
-| POST   | `/api/robos`              | Cria robo (escavadeira/transportador/montador) |
-| GET    | `/api/robos`              | Lista todos                            |
-| GET    | `/api/robos/{id}`         | Detalhe                                |
-| PATCH  | `/api/robos/{id}/status`  | Atualiza status manualmente            |
-| DELETE | `/api/robos/{id}`         | Remove (bloqueado se EM_TAREFA)        |
+- **Swagger UI** (interface clicável) → **http://localhost:8080/swagger-ui.html**
+- **Documento OpenAPI / OAS 3.1** (JSON) → **http://localhost:8080/api-docs**
+
+> ⚠️ O caminho do JSON foi customizado para `/api-docs` (em vez do padrão `/v3/api-docs`),
+> via `springdoc.api-docs.path` no `application.properties`.
+
+O **OAS** é a descrição padronizada e legível por máquina de toda a API (endpoints, parâmetros,
+respostas e modelos). O **springdoc** gera esse documento a partir do código, e o **Swagger UI**
+o transforma na tela interativa.
+
+---
+
+## 🔌 Endpoints
+
+### Robôs
+
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| POST   | `/api/robos`              | Cria robô (escavadeira/transportador/montador) |
+| GET    | `/api/robos`              | Lista todos |
+| GET    | `/api/robos/{id}`         | Detalhe |
+| PATCH  | `/api/robos/{id}/status`  | Atualiza status manualmente |
+| DELETE | `/api/robos/{id}`         | Remove (bloqueado se `EM_TAREFA`) |
 
 ### Tarefas
 
-| Metodo | Caminho                              | Descricao                         |
-|--------|--------------------------------------|-----------------------------------|
-| POST   | `/api/tarefas`                       | Cria tarefa                       |
-| GET    | `/api/tarefas`                       | Lista                             |
-| GET    | `/api/tarefas/{id}`                  | Detalhe                           |
-| POST   | `/api/tarefas/{id}/atribuir`         | Atribui automaticamente ao melhor robo |
-| POST   | `/api/tarefas/{id}/atribuir/{roboId}` | Atribui a um robo especifico     |
-| POST   | `/api/tarefas/{id}/concluir`         | Marca como concluida              |
-| POST   | `/api/tarefas/{id}/realocar`         | Forca realocacao para outro robo  |
-| DELETE | `/api/tarefas/{id}`                  | Remove                            |
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| POST   | `/api/tarefas`                        | Cria tarefa |
+| GET    | `/api/tarefas`                        | Lista |
+| GET    | `/api/tarefas/{id}`                   | Detalhe |
+| POST   | `/api/tarefas/{id}/atribuir`          | Atribui automaticamente ao melhor robô |
+| POST   | `/api/tarefas/{id}/atribuir/{roboId}` | Atribui a um robô específico |
+| POST   | `/api/tarefas/{id}/concluir`          | Marca como concluída |
+| POST   | `/api/tarefas/{id}/realocar`          | Força realocação para outro robô |
+| DELETE | `/api/tarefas/{id}`                   | Remove |
 
 ### Heartbeats
 
-| Metodo | Caminho                                  | Descricao                |
-|--------|------------------------------------------|--------------------------|
-| POST   | `/api/robos/{roboId}/heartbeats`         | Registra heartbeat       |
-| GET    | `/api/robos/{roboId}/heartbeats`         | Historico do robo        |
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| POST   | `/api/robos/{roboId}/heartbeats` | Registra heartbeat |
+| GET    | `/api/robos/{roboId}/heartbeats` | Histórico do robô |
 
 ### Alertas
 
-| Metodo | Caminho                       | Descricao                          |
-|--------|-------------------------------|------------------------------------|
-| GET    | `/api/alertas`                | Lista (filtro `?resolvido=false`)  |
-| GET    | `/api/alertas/{id}`           | Detalhe                            |
-| POST   | `/api/alertas/{id}/resolver`  | Marca como resolvido               |
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| GET    | `/api/alertas`               | Lista (filtro `?resolvido=false`) |
+| GET    | `/api/alertas/{id}`          | Detalhe |
+| POST   | `/api/alertas/{id}/resolver` | Marca como resolvido |
 
 ---
 
-## Exemplo de uso (curl)
+## 💻 Exemplo de uso (curl)
 
 ```bash
 # 1. Cria duas escavadeiras
@@ -190,24 +314,24 @@ curl -X POST http://localhost:8080/api/robos -H "Content-Type: application/json"
   "capacidadeCargaKg": 500, "profundidadeMaximaMetros": 3.5
 }'
 
-# 2. Cria uma tarefa de escavacao
+# 2. Cria uma tarefa de escavação
 curl -X POST http://localhost:8080/api/tarefas -H "Content-Type: application/json" -d '{
   "codigo": "T-001", "descricao": "Escavar cratera setor 5",
   "tipoRoboRequerido": "ESCAVADEIRA", "prioridade": "ALTA",
   "latitude": -3.0, "longitude": 23.4
 }'
 
-# 3. Atribui automaticamente ao melhor robo disponivel
+# 3. Atribui automaticamente ao melhor robô disponível
 curl -X POST http://localhost:8080/api/tarefas/1/atribuir
 
-# 4. Robo A manda heartbeat (vivo)
+# 4. Robô A manda heartbeat (vivo)
 curl -X POST http://localhost:8080/api/robos/1/heartbeats -H "Content-Type: application/json" -d '{
   "bateria": 85, "latitude": -3.05, "longitude": 23.42,
   "statusReportado": "EM_TAREFA", "mensagem": "tudo certo"
 }'
 
 # 5. Para de mandar heartbeat e espera ~70 segundos.
-#    O MonitorDeFalhasService vai detectar e realocar para o Robo B.
+#    O MonitorDeFalhasService vai detectar a falha e realocar para o Robô B.
 
 # 6. Confere os alertas gerados
 curl http://localhost:8080/api/alertas
@@ -215,43 +339,69 @@ curl http://localhost:8080/api/alertas
 
 ---
 
-## Mapeamento dos requisitos do professor
+## 📐 Regras de negócio implementadas
 
-| Requisito                                        | Onde esta no codigo                                                                                  |
-|--------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| Classes publicas, privadas, estaticas            | `Robo.aoCriar()` (protected), construtores publicos, factory `RoboResponseDTO.de(...)` (static)      |
-| Heranca                                          | `Robo` (abstract) -> `RoboEscavadeira`, `RoboTransportador`, `RoboMontador`                          |
-| Polimorfismo                                     | `Robo.getTipo()` e `descricaoCapacidade()` sao abstract e cada subclasse implementa diferente        |
-| Classes abstratas                                | `Robo` e `abstract`                                                                                  |
-| Interfaces + injecao de dependencia              | `OrquestradorEnxame` (interface) injetado em `RoboService`, `TarefaService`, `MonitorDeFalhasService`|
-| Modularizacao em metodos                         | Servicos divididos por responsabilidade, metodos privados auxiliares no orquestrador e monitor       |
-| Manipulacao de DateTime                          | `LocalDateTime` em heartbeat, tarefas, alertas; `MonitorDeFalhasService.detectarRobosOffline()`      |
-| Tratamento de excecoes                           | `exception/` com excecoes customizadas + `GlobalExceptionHandler` (@RestControllerAdvice)            |
-| VO / DTO                                         | `Coordenada` (record + @Embeddable - VO) e records em `dto/`                                         |
-| Banco de dados                                   | PostgreSQL + JPA com `@Entity`, `@Inheritance`, `@Embedded`, `@ManyToOne`                            |
-| WebService / API                                 | Controllers REST em `controller/` com endpoints CRUD + Swagger UI                                    |
-| Organizacao                                      | Pacotes `controller`, `service`, `repository`, `model`, `dto`, `exception`                           |
-
----
-
-## Regras de negocio implementadas
-
-1. **Heartbeat** - cada robo envia status periodicamente; servico atualiza posicao, bateria
-   e `ultimoHeartbeat`. Se bateria < 20% gera alerta `BATERIA_BAIXA`.
-2. **Deteccao de falha** - job `@Scheduled` roda a cada 10s e marca como `FALHA`
-   quem nao mandou heartbeat ha mais de 60s.
-3. **Realocacao automatica** - tarefas em execucao do robo falho sao realocadas
-   para outro robo do mesmo tipo via `OrquestradorEnxame.realocarTarefa()`.
-   Se nao tiver nenhum disponivel, gera alerta `TAREFA_SEM_ROBO_DISPONIVEL`.
-4. **Atribuicao inteligente** - ao atribuir tarefa, escolhe o robo do tipo correto
-   mais proximo do local da tarefa (distancia euclidiana de coordenadas).
-5. **Codigo unico** - robo e tarefa tem `codigo` unico (lanca `CodigoDuplicadoException` 409).
-6. **Bloqueio de remocao** - nao deixa deletar robo em tarefa nem tarefa em execucao.
-7. **Recuperacao automatica** - se robo em `FALHA` voltar a mandar heartbeat
-   reportando outro status, e movido para `DISPONIVEL`.
+1. **Heartbeat** — cada robô envia status periodicamente; o serviço atualiza posição, bateria
+   e `ultimoHeartbeat`. Se a bateria cai abaixo de 20% gera alerta `BATERIA_BAIXA`.
+2. **Detecção de falha** — job `@Scheduled` roda a cada 10s e marca como `FALHA`
+   quem não mandou heartbeat há mais de 60s.
+3. **Realocação automática** — tarefas em execução do robô falho são realocadas para outro robô
+   do mesmo tipo via `OrquestradorEnxame.realocarTarefa()`. O robô anterior **saudável** é liberado
+   de volta para `DISPONIVEL`; se estava em `FALHA`, permanece em falha. Sem substituto disponível,
+   gera alerta `TAREFA_SEM_ROBO_DISPONIVEL`.
+4. **Atribuição inteligente** — ao atribuir uma tarefa, escolhe o robô do tipo correto **mais próximo**
+   do local (distância euclidiana entre coordenadas).
+5. **Código único** — robô e tarefa têm `codigo` único (lança `CodigoDuplicadoException`, HTTP 409).
+6. **Bloqueio de remoção** — não permite deletar robô em tarefa nem com tarefas ativas; ao remover,
+   o histórico (alertas/tarefas concluídas) é preservado com a referência ao robô zerada.
+7. **Recuperação automática** — se um robô em `FALHA` voltar a mandar heartbeat reportando outro
+   status, é movido de volta para `DISPONIVEL`.
 
 ---
 
-## Autor
+## 🧪 Testes
 
-Gabriel Gouvea - Global Solution Java FIAP 2026
+Testes automatizados com **JUnit 5 + Mockito** (24 testes no total):
+
+| Arquivo | O que valida |
+|---------|--------------|
+| `CoordenadaTest` | Value Object: igualdade e cálculo de distância |
+| `RoboPolimorfismoTest` | Herança e polimorfismo das subclasses de `Robo` |
+| `TarefaTest` | Ciclo de vida da tarefa (atribuir, concluir, realocar) |
+| `OrquestradorEnxameTest` | Núcleo da inteligência: escolha do melhor robô, realocação, alertas |
+
+```bash
+./mvnw test
+```
+
+---
+
+## ✅ Mapeamento dos requisitos do professor
+
+| Requisito | Onde está no código |
+|-----------|---------------------|
+| Classes públicas, privadas, estáticas | `Robo.aoCriar()` (protected), construtores públicos, factory `RoboResponseDTO.de(...)` (static) |
+| Herança | `Robo` (abstract) → `RoboEscavadeira`, `RoboTransportador`, `RoboMontador` |
+| Polimorfismo | `getTipo()` e `descricaoCapacidade()` são abstratos e cada subclasse implementa diferente |
+| Classes abstratas | `Robo` é `abstract` |
+| Interfaces + injeção de dependência | `OrquestradorEnxame` (interface) injetado em `RoboService`, `TarefaService`, `MonitorDeFalhasService` |
+| Modularização em métodos | Serviços divididos por responsabilidade; métodos privados auxiliares no orquestrador e no monitor |
+| Manipulação de DateTime | `LocalDateTime` em heartbeat, tarefas e alertas; `MonitorDeFalhasService.detectarRobosOffline()` |
+| Estruturas de controle | Laços e condicionais na detecção de falhas, atribuição e realocação |
+| Tratamento de exceções | Pacote `exception/` com exceções customizadas + `GlobalExceptionHandler` (`@RestControllerAdvice`) |
+| VO / DTO | `Coordenada` (record + `@Embeddable` = VO) e records em `dto/` |
+| Banco de dados | PostgreSQL + JPA com `@Entity`, `@Inheritance`, `@Embedded`, `@ManyToOne` |
+| WebService / API | Controllers REST em `controller/` com CRUD completo + documentação Swagger/OAS |
+| Testes | JUnit 5 + Mockito (24 testes) |
+| Organização | Pacotes `controller`, `service`, `repository`, `model`, `dto`, `exception` |
+
+---
+
+## 👥 Autores
+
+Grupo da Global Solution (Space Connect) · Java · FIAP · 2026
+
+- **554981** — Bruno Gabriel Silva Dominicheli
+- **555528** — Gabriel Gouvea Marques de Oliveira
+- **556198** — Miguel Kapicius Caires
+- **555608** — Thiago Ferreira Oliveira
