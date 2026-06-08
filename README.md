@@ -281,6 +281,40 @@ Testes automatizados com **JUnit 5 + Mockito** (24 testes no total):
 
 ---
 
+## Evidências de Execução
+
+Capturas da API rodando localmente em `http://localhost:8080` (via Swagger UI), mostrando o fluxo
+completo: criação, listagem, ciclo de vida das tarefas e a geração automática de alertas pelo
+monitor de falhas.
+
+**1. Criação de robô — `POST /api/robos`**
+Cadastro de uma escavadeira pela Swagger UI; o corpo da requisição é validado pelos DTOs antes de
+chegar ao serviço.
+
+![Criação de robô via Swagger](docs/evidencias/01-criar-robo.png)
+
+**2. Listagem de robôs — `GET /api/robos`**
+Resposta `200` com os robôs cadastrados. O campo `descricaoCapacidade` é polimórfico (cada tipo
+descreve sua capacidade de forma diferente) e há um robô com `status: FALHA`, marcado
+automaticamente após parar de enviar heartbeat.
+
+![Listagem de robôs](docs/evidencias/02-listar-robos.png)
+
+**3. Listagem de tarefas — `GET /api/tarefas`**
+Ciclo de vida da tarefa com os instantes `criadaEm`, `iniciadaEm` e `concluidaEm` (manipulação de
+DateTime) e o contador `vezesRealocada`, que comprova a realocação automática.
+
+![Listagem de tarefas](docs/evidencias/03-listar-tarefas.png)
+
+**4. Alertas automáticos — `GET /api/alertas`**
+Alertas gerados pelo sistema sem intervenção humana: um `ROBO_OFFLINE` de severidade `CRITICO`,
+criado pelo `MonitorDeFalhasService` ao detectar um robô sem heartbeat por mais de 60s, e um
+`BATERIA_BAIXA` (`AVISO`).
+
+![Alertas automáticos](docs/evidencias/04-alertas-automaticos.png)
+
+---
+
 ## Mapeamento dos requisitos do professor
 
 | Requisito | Onde está no código |
@@ -299,3 +333,14 @@ Testes automatizados com **JUnit 5 + Mockito** (24 testes no total):
 | WebService / API | Controllers REST em `controller/` com CRUD completo + documentação Swagger/OAS |
 | Testes | JUnit 5 + Mockito (24 testes) |
 | Organização | Pacotes `controller`, `service`, `repository`, `model`, `dto`, `exception` |
+
+---
+
+## Autores
+
+Grupo da Global Solution (Space Connect) · Java · FIAP · 2026
+
+- **554981** — Bruno Gabriel Silva Dominicheli
+- **555528** — Gabriel Gouvea Marques de Oliveira
+- **556198** — Miguel Kapicius Caires
+- **555608** — Thiago Ferreira Oliveira

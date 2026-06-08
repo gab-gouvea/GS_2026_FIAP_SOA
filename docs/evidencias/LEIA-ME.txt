@@ -1,0 +1,10 @@
+Coloque aqui os 4 prints de evidencia de execucao, com EXATAMENTE estes nomes
+(o README.md ja referencia esses arquivos na secao "Evidencias de Execucao"):
+
+  01-criar-robo.png          -> print do POST /api/robos (tela do Swagger com o botao "Execute")
+  02-listar-robos.png        -> print do GET /api/robos  (lista com o robo em status FALHA)
+  03-listar-tarefas.png      -> print do GET /api/tarefas (tarefa CONCLUIDA / vezesRealocada)
+  04-alertas-automaticos.png -> print do GET /api/alertas (ROBO_OFFLINE CRITICO + BATERIA_BAIXA)
+
+Mantendo esses nomes, as imagens aparecem automaticamente no README.
+Depois pode apagar este arquivo.
